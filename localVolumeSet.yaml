@@ -1,0 +1,17 @@
+apiVersion: local.storage.openshift.io/v1alpha1
+kind: LocalVolumeSet
+metadata:
+  name: odf-storage-disks
+  namespace: openshift-local-storage
+spec:
+  nodeSelector:
+    nodeSelectorTerms:
+      - matchExpressions:
+          - key: cluster.ocs.openshift.io/openshift-storage
+            operator: Exists
+  storageClassName: localblock  # ODF will look for this StorageClass
+  volumeMode: Block             # CRITICAL FOR ODF: Must be Block, not Filesystem
+  deviceInclusionSpec:
+    deviceTypes:
+      - disk
+    minSize: 256Gi
