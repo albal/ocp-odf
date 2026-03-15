@@ -56,6 +56,16 @@ bash storage-cluster.sh
 
 The script automatically detects the size of the provisioned PersistentVolumes and creates the `StorageCluster` resource accordingly.
 
+### 5. Set the default StorageClass
+
+After the storage cluster is ready, mark the `ocs-storagecluster-ceph-rbd` StorageClass as the cluster-wide default:
+
+```bash
+bash default-storageClass.sh
+```
+
+This patches the StorageClass with the `storageclass.kubernetes.io/is-default-class: "true"` annotation so that PersistentVolumeClaims that do not specify a StorageClass are automatically provisioned using Ceph RBD.
+
 ## File Reference
 
 | File | Description |
@@ -64,6 +74,7 @@ The script automatically detects the size of the provisioned PersistentVolumes a
 | `localVolumeDiscovery.yaml` | `LocalVolumeDiscovery` CR — auto-discovers block devices on labeled nodes |
 | `localVolumeSet.yaml` | `LocalVolumeSet` CR — creates the `localblock` StorageClass from discovered disks |
 | `storage-cluster.sh` | Creates the ODF `StorageCluster` using the provisioned local volumes |
+| `default-storageClass.sh` | Marks `ocs-storagecluster-ceph-rbd` as the default StorageClass |
 
 ## License
 
