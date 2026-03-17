@@ -11,7 +11,7 @@ spec:
     requests:
       storage: 1Ti
   # Uncomment the line below and add your StorageClass if you want to target RBD or CephFS specifically
-  # storageClassName: ocs-storagecluster-ceph-rbd 
+  # storageClassName: ocs-storagecluster-ceph-rbd
 ---
 apiVersion: v1
 kind: Pod
@@ -27,11 +27,9 @@ spec:
         - |
           echo "Starting 1TB sequential write test..."
           echo "Writing to /mnt/data/benchfile until the disk is full."
-          
           # Run dd until it hits 'No space left on device'.
           # conv=fsync ensures data is committed to disk, not just cached in RAM, for an accurate speed metric.
           dd if=/dev/zero of=/mnt/data/benchfile bs=4M conv=fsync
-          
           echo "---"
           echo "Disk full. Benchmark complete!"
           echo "Pod will now sleep so you can read these logs."
