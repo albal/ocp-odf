@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ceph-bench-pvc
+  # You can run this in your default namespace or create a new one for testing
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Ti
+  # Uncomment the line below and add your StorageClass if you want to target RBD or CephFS specifically
+  # storageClassName: ocs-storagecluster-ceph-rbd 
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ceph-bench-pod
+spec:
+  restartPolicy: Never
+  containers:
+    - name: busybox
+      image: busybox:latest
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          echo "Starting 1TB sequential write test..."
+          echo "Writing to /mnt/data/benchfile until the disk is full."
+          
+          # Run dd until it hits 'No space left on device'.
+          # conv=fsync ensures data is committed to disk, not just cached in RAM, for an accurate speed metric.
+          dd if=/dev/zero of=/mnt/data/benchfile bs=4M conv=fsync
+          
+          echo "---"
+          echo "Disk full. Benchmark complete!"
+          echo "Pod will now sleep so you can read these logs."
+          sleep infinity
+      volumeMounts:
+        - name: bench-volume
+          mountPath: /mnt/data
+  volumes:
+    - name: bench-volume
+      persistentVolumeClaim:
+        claimName: ceph-bench-pvc
